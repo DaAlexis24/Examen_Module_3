@@ -135,4 +135,25 @@ describe('Given instance of Products Controller', () => {
             });
         });
     });
+
+    describe('When it called update method', () => {
+        describe('And the repo return valid data', () => {
+            test('Then it return a json with a new data for the product', async () => {
+                // Arrange
+                const mockProduct = { id: 1, name: 'New Test' };
+                req.params = { id: '1' };
+                req.body = { name: 'New Test' };
+                repo.update = vi.fn().mockResolvedValueOnce(mockProduct);
+                // Act
+                await controller.update(req, res, next);
+                // Assert
+                expect(repo.update).toHaveBeenCalled();
+                expect(res.json).toHaveBeenCalledWith({
+                    results: [mockProduct],
+                    error: '',
+                });
+                expect(next).not.toHaveBeenCalled();
+            });
+        });
+    });
 });
