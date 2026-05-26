@@ -29,5 +29,12 @@ describe('Given a Header Component', () => {
             expect(button).toHaveAttribute('aria-expanded', 'false');
             expect(button).toHaveAttribute('aria-controls', 'add');
         });
+
+        test('Then it exists details with a summary inside it', () => {
+            // Act
+            const summary = screen.getByText('Add', { selector: 'summary' });
+            // Arrange
+            expect(summary).toBeInTheDocument();
+        });
     });
 });
