@@ -73,4 +73,40 @@ describe('Given a instance of ApiRepo', () => {
             });
         });
     });
+
+    describe('When method updateProduct is called', () => {
+        const updatedProduct = { ...mockProduct, name: 'Update' };
+        describe('And fetch response is OK', () => {
+            beforeEach(() => {
+                vi.spyOn(globalThis, 'fetch').mockResolvedValue({
+                    ok: true,
+                    json: vi.fn().mockResolvedValueOnce(updatedProduct),
+                } as unknown as Response);
+            });
+            test('Then it create a product', async () => {
+                // Act
+                const result = await repo.updateProduct(
+                    mockProduct.id,
+                    updatedProduct,
+                );
+                // Arrange
+                expect(result).toEqual(updatedProduct);
+            });
+        });
+
+        describe('And fetch response is not OK', () => {
+            beforeEach(() => {
+                // Arrange
+                vi.spyOn(globalThis, 'fetch').mockResolvedValue({
+                    ok: false,
+                } as unknown as Response);
+            });
+            test('Then it reject the promise', async () => {
+                // Act and Assert
+                expect(
+                    repo.updateProduct(mockProduct.id, mockProduct),
+                ).rejects.toThrow();
+            });
+        });
+    });
 });
