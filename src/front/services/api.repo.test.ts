@@ -83,7 +83,7 @@ describe('Given a instance of ApiRepo', () => {
                     json: vi.fn().mockResolvedValueOnce(updatedProduct),
                 } as unknown as Response);
             });
-            test('Then it create a product', async () => {
+            test('Then it update a product', async () => {
                 // Act
                 const result = await repo.updateProduct(
                     mockProduct.id,
@@ -106,6 +106,36 @@ describe('Given a instance of ApiRepo', () => {
                 expect(
                     repo.updateProduct(mockProduct.id, mockProduct),
                 ).rejects.toThrow();
+            });
+        });
+    });
+
+    describe('When method deleteProduct is called', () => {
+        describe('And fetch response is OK', () => {
+            beforeEach(() => {
+                vi.spyOn(globalThis, 'fetch').mockResolvedValue({
+                    ok: true,
+                    json: vi.fn().mockResolvedValueOnce(mockProduct),
+                } as unknown as Response);
+            });
+            test('Then it delete a product', async () => {
+                // Act
+                const result = await repo.deleteProduct(mockProduct.id);
+                // Arrange
+                expect(result).toEqual(mockProduct);
+            });
+        });
+
+        describe('And fetch response is not OK', () => {
+            beforeEach(() => {
+                // Arrange
+                vi.spyOn(globalThis, 'fetch').mockResolvedValue({
+                    ok: false,
+                } as unknown as Response);
+            });
+            test('Then it reject the promise', async () => {
+                // Act and Assert
+                expect(repo.deleteProduct(mockProduct.id)).rejects.toThrow();
             });
         });
     });
