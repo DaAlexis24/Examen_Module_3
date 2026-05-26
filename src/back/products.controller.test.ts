@@ -101,4 +101,38 @@ describe('Given instance of Products Controller', () => {
             });
         });
     });
+
+    describe('When it called create method', () => {
+        describe('And repo return valid data', () => {
+            test('Then it return 201 status and json with a product', async () => {
+                // Arrange
+                const mockProduct = { id: 1 };
+                req.body = { name: 'Test' };
+                repo.create = vi.fn().mockResolvedValueOnce(mockProduct);
+                // Act
+                await controller.create(req, res, next);
+                // Assert
+                expect(res.status).toHaveBeenCalledWith(201);
+                expect(res.json).toHaveBeenCalledWith({
+                    results: [mockProduct],
+                    error: '',
+                });
+                expect(next).not.toHaveBeenCalled();
+            });
+        });
+        describe('And repo throw an Error', () => {
+            // Assert
+            test('', async () => {
+                // Arrange
+                req.params = { id: '1' };
+                repo.create = vi.fn().mockRejectedValueOnce(new Error());
+                // Act
+                await controller.create(req, res, next);
+                // Assert
+                expect(next).toHaveBeenCalledWith(
+                    expect.objectContaining({} as Error),
+                );
+            });
+        });
+    });
 });
