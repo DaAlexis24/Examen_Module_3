@@ -21,5 +21,13 @@ describe('Given a Header Component', () => {
             expect(title).toBeInTheDocument();
             expect(button).toBeInTheDocument();
         });
+
+        test('Then Add button has correct attributes', () => {
+            // Act
+            const button = screen.getByRole('button', { name: /add/i });
+            // Arrange
+            expect(button).toHaveAttribute('aria-expanded', 'false');
+            expect(button).toHaveAttribute('aria-controls', 'add');
+        });
     });
 });
