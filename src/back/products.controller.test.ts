@@ -147,12 +147,60 @@ describe('Given instance of Products Controller', () => {
                 // Act
                 await controller.update(req, res, next);
                 // Assert
-                expect(repo.update).toHaveBeenCalled();
+                expect(repo.update).toHaveBeenCalledWith('1', req.body);
                 expect(res.json).toHaveBeenCalledWith({
                     results: [mockProduct],
                     error: '',
                 });
                 expect(next).not.toHaveBeenCalled();
+            });
+        });
+        describe('And repo throw an Error', () => {
+            // Assert
+            test('', async () => {
+                // Arrange
+                req.params = { id: '1' };
+                repo.update = vi.fn().mockRejectedValueOnce(new Error());
+                // Act
+                await controller.update(req, res, next);
+                // Assert
+                expect(next).toHaveBeenCalledWith(
+                    expect.objectContaining({} as Error),
+                );
+            });
+        });
+    });
+
+    describe('When it called delete method', () => {
+        describe('And repo return a valid data', () => {
+            test('Then it showed deleted product', async () => {
+                // Arrange
+                req.params = { id: '1' };
+                const mockProduct = { id: '1', name: 'Delete Product' };
+                repo.delete = vi.fn().mockResolvedValueOnce(mockProduct);
+                // Act
+                await controller.delete(req, res, next);
+                // Assert
+                expect(repo.delete).toHaveBeenCalledWith('1');
+                expect(res.json).toHaveBeenCalledWith({
+                    results: [mockProduct],
+                    error: '',
+                });
+                expect(next).not.toHaveBeenCalled();
+            });
+        });
+        describe('And repo throw an Error', () => {
+            // Assert
+            test('', async () => {
+                // Arrange
+                req.params = { id: '1' };
+                repo.delete = vi.fn().mockRejectedValueOnce(new Error());
+                // Act
+                await controller.delete(req, res, next);
+                // Assert
+                expect(next).toHaveBeenCalledWith(
+                    expect.objectContaining({} as Error),
+                );
             });
         });
     });
