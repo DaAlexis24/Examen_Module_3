@@ -42,13 +42,15 @@ describe('Given instance of Products Controller', () => {
         describe('And repo return valid data', () => {
             test('Then it returns a array of products', async () => {
                 // Arrange
-                const methodRepo = (repo.read = vi
-                    .fn()
-                    .mockResolvedValueOnce([]));
+                const mockProducts = [{ id: '1', name: 'Test' }];
+                repo.read = vi.fn().mockResolvedValueOnce(mockProducts);
                 // Act
                 await controller.getAll(req, res, next);
                 // Assert
-                expect(methodRepo).toHaveBeenCalled();
+                expect(res.json).toHaveBeenCalledWith({
+                    results: mockProducts,
+                    error: '',
+                });
                 expect(next).not.toHaveBeenCalled();
             });
         });
@@ -59,6 +61,39 @@ describe('Given instance of Products Controller', () => {
                 repo.read = vi.fn().mockRejectedValueOnce(new Error());
                 // Act
                 await controller.getAll(req, res, next);
+                // Assert
+                expect(next).toHaveBeenCalledWith(
+                    expect.objectContaining({} as Error),
+                );
+            });
+        });
+    });
+
+    describe('When it called getById method', () => {
+        describe('And repo return valid data', () => {
+            test('Then it returns a json with a product', async () => {
+                // Arrange
+                const mockProduct = { id: 1 };
+                req.params = { id: '1' };
+                repo.readById = vi.fn().mockResolvedValueOnce(mockProduct);
+                // Act
+                await controller.getById(req, res, next);
+                // Assert
+                expect(res.json).toHaveBeenCalledWith({
+                    results: [mockProduct],
+                    error: '',
+                });
+                expect(next).not.toHaveBeenCalled();
+            });
+        });
+        describe('And repo throw an Error', () => {
+            // Assert
+            test('', async () => {
+                // Arrange
+                req.params = { id: '1' };
+                repo.readById = vi.fn().mockRejectedValueOnce(new Error());
+                // Act
+                await controller.getById(req, res, next);
                 // Assert
                 expect(next).toHaveBeenCalledWith(
                     expect.objectContaining({} as Error),
