@@ -37,4 +37,33 @@ describe('Given instance of Products Controller', () => {
             expect(controller).toBeInstanceOf(ProductsController);
         });
     });
+
+    describe('When it called getAll method', () => {
+        describe('And repo return valid data', () => {
+            test('Then it returns a array of products', async () => {
+                // Arrange
+                const methodRepo = (repo.read = vi
+                    .fn()
+                    .mockResolvedValueOnce([]));
+                // Act
+                await controller.getAll(req, res, next);
+                // Assert
+                expect(methodRepo).toHaveBeenCalled();
+                expect(next).not.toHaveBeenCalled();
+            });
+        });
+        describe('And repo throw an Error', () => {
+            // Assert
+            test('', async () => {
+                // Arrange
+                repo.read = vi.fn().mockRejectedValueOnce(new Error());
+                // Act
+                await controller.getAll(req, res, next);
+                // Assert
+                expect(next).toHaveBeenCalledWith(
+                    expect.objectContaining({} as Error),
+                );
+            });
+        });
+    });
 });
